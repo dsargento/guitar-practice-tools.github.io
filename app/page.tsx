@@ -1,14 +1,15 @@
 'use client';
 import { useState } from "react";
+import * as Tone from "tone";
 
-const notes = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"];
+const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const synth = new Tone.Synth().toDestination();
 
 function Fretboard({scale, tuning, root}) {
   let localNotes = [...notes];
 
   let index = localNotes.indexOf(root);
   for (let i = 0; i < scale.length; i++) {
-    // problème, index + 1
     if (index > notes.length) {
       index = index - notes.length;
     }
@@ -43,7 +44,7 @@ function String({tuning, localNotes}) {
 function Note({note}) {
   if (note !== "") {
   return (
-    <div className="note flex flex-column flex-center">
+    <div className="note flex flex-column flex-center" onClick={() => synth.triggerAttackRelease(note + "4", "8n")}>
     <p>
     {note}
     </p>
@@ -82,6 +83,21 @@ export default function Home() {
 
     <Fretboard scale={scale} tuning={tuning} root={rootNote}/>
     <RootNote root={rootNote} onRootChange={setRootNote}/>
+    Chromatic
+    Major diatonic, Ionian mode
+    Lydian
+    Mixolydian
+    Melodic minor
+    Dorian
+    Phrygian
+    Aeolian mode Natural minor relative minor
+    Harmonic minor
+    Major pentatonic
+    Minor pentatonic
+    Whole tone
+    Diminished
+    Locrian
+
     <select>
     <option>E Standard</option>
     </select>
