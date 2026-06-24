@@ -1,11 +1,9 @@
-// Bug du DO
-// Pourquoi le do est il inclus dans des gammes où il ne doit pas être 
 'use client';
 import { useState } from "react";
 import * as Tone from "tone";
 
 const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-// const synth = new Tone.Synth().toDestination();
+//const synth = new Tone.Synth().toDestination();
 
 function Fretboard({scale, tuning, root}) {
   let localNotes = [...notes];
@@ -19,7 +17,10 @@ function Fretboard({scale, tuning, root}) {
       // Parce que du coup dans la ligne suivante quand on remplace, on a déjà dépassé les notes
       // Donc il faudrait s'assurer qu'entre 0 et notre index les notes sont bien remplacées
       index = (index - notes.length);
+
+      console.log(localNotes);
       localNotes = localNotes.fill("", 0, index);
+      console.log(localNotes);
     }
 
     // On remplace les notes entre l'index actuel non inclus et l'index défini par l'intervalle 
@@ -39,17 +40,19 @@ function Fretboard({scale, tuning, root}) {
 };
 
 function String({tuning, localNotes}) {
-
   const start = notes.indexOf(tuning[0]);
   let octave = tuning[1];
   localNotes = localNotes.slice(start).concat(localNotes.slice(0, start));
   localNotes = localNotes.concat(localNotes).concat([localNotes[0]]);
 
-  const displayNotes = localNotes.map(function(note, key) { 
-                                      if (note == "C") {
-                                        octave++;
-                                      }
-                                      return <Note key={key} note={note} octave={octave}/>
+  const displayNotes = localNotes.map(function(note, key) {
+    // Octave bumps based on absolute chromatic position, not on the
+    // (possibly scale-filtered-out) displayed note.
+    const chromaticIndex = (start + key) % notes.length;
+    if (chromaticIndex === 0 && key !== 0) {
+      octave++;
+    }
+    return <Note key={key} note={note} octave={octave}/>
   });
   return (
     <>
@@ -57,7 +60,6 @@ function String({tuning, localNotes}) {
     </>
   );
 }
-
 function Note({note, octave}) {
   if (note !== "") {
   return (
@@ -88,8 +90,8 @@ function RootNote({root, onRootChange}) {
 }
 
 export default function Home() {
-  const [rootNote, setRootNote] = useState("B");
-  const scale = [2, 2, 1, 2, 2, 2, 1];
+  const [rootNote, setRootNote] = useState("C");
+  const [scale, setScale] = useState([2, 2, 1, 2, 2, 2, 1]);
   const tuning = ["E4", "B3", "G3", "D3", "A2", "E2"];
 
   return (
@@ -100,23 +102,28 @@ export default function Home() {
 
     <Fretboard scale={scale} tuning={tuning} root={rootNote}/>
     <RootNote root={rootNote} onRootChange={setRootNote}/>
-    Chromatic
-    Major diatonic, Ionian mode
-    Lydian
-    Mixolydian
-    Melodic minor
-    Dorian
-    Phrygian
-    Aeolian mode Natural minor relative minor
-    Harmonic minor
-    Major pentatonic
-    Minor pentatonic
-    Whole tone
-    Diminished
-    Locrian
+
+    <button onClick={()=> setScale([])}>Chromatic</button>
+    <button onClick={()=> setScale([2,2,1,2,2,2,1])}>Major diatonic, Ionian mode</button>
+    <button onClick={()=> setScale([2,2,2,1,2,2,1])}>Lydian</button>
+    <button onClick={()=> setScale([2,2,1,2,2,1,2])}>Mixolydian</button>
+    <button onClick={()=> setScale([2,1,2,2,2,2,1])}>Melodic minor (ascending)</button>
+    <button onClick={()=> setScale([2,1,2,2,2,1,2])}>Dorian</button>
+    <button onClick={()=> setScale([1,2,2,2,2,1,2])}>Phrygian</button>
+    <button onClick={()=> setScale([2,2,1,2,1,2,2])}>Natural minor (Aeolian / Relative minor)</button>
+    <button onClick={()=> setScale([2,2,1,2,1,3,1])}>Harmonic minor</button>
+    <button onClick={()=> setScale([2,2,3,2,3])}>Major pentatonic</button>
+    <button onClick={()=> setScale([3,2,2,3,2])}>Minor pentatonic</button>
+    <button onClick={()=> setScale([2,2,2,2,2,2])}>Whole tone</button>
+    <button onClick={()=> setScale([2,1,2,1,2,1,2,1])}>Diminished</button>
+    <button onClick={()=> setScale([1,2,2,1,2,2,2])}>Locrian</button>
 
     <select>
     <option>E Standard</option>
+    <option>Eb Standard</option>
+    <option>D Standard</option>
+    <option>C# Standard</option>
+    <option>C Standard</option>
     </select>
     </div>
 
