@@ -1,18 +1,28 @@
+// Bug du DO
+// Pourquoi le do est il inclus dans des gammes où il ne doit pas être 
 'use client';
 import { useState } from "react";
 import * as Tone from "tone";
 
 const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-const synth = new Tone.Synth().toDestination();
+// const synth = new Tone.Synth().toDestination();
 
 function Fretboard({scale, tuning, root}) {
   let localNotes = [...notes];
-
+  // Note filtering according to scale intervals
+  // Start at the rootnote
   let index = localNotes.indexOf(root);
   for (let i = 0; i < scale.length; i++) {
+    // Wrapping
     if (index > notes.length) {
-      index = index - notes.length;
+      // On wrap, mais on laisse des notes dans la gamme qui ne devraient pas y etre
+      // Parce que du coup dans la ligne suivante quand on remplace, on a déjà dépassé les notes
+      // Donc il faudrait s'assurer qu'entre 0 et notre index les notes sont bien remplacées
+      index = (index - notes.length);
+      localNotes = localNotes.fill("", 0, index);
     }
+
+    // On remplace les notes entre l'index actuel non inclus et l'index défini par l'intervalle 
     localNotes = localNotes.fill("", index + 1, index + scale[i]);
     index = index + scale[i];
   }
@@ -21,7 +31,7 @@ function Fretboard({scale, tuning, root}) {
 
   return (
     <div className="fretboard ">
-    <div className="string grid grid-cols-12">
+    <div className="string grid grid-cols-25">
     {strings}
     </div>
     </div>
@@ -30,10 +40,17 @@ function Fretboard({scale, tuning, root}) {
 
 function String({tuning, localNotes}) {
 
-  const start = notes.indexOf(tuning);
+  const start = notes.indexOf(tuning[0]);
+  let octave = tuning[1];
   localNotes = localNotes.slice(start).concat(localNotes.slice(0, start));
+  localNotes = localNotes.concat(localNotes).concat([localNotes[0]]);
 
-  const displayNotes = localNotes.map((note, key) => <Note key={key} note={note}/>);
+  const displayNotes = localNotes.map(function(note, key) { 
+                                      if (note == "C") {
+                                        octave++;
+                                      }
+                                      return <Note key={key} note={note} octave={octave}/>
+  });
   return (
     <>
     {displayNotes}
@@ -41,10 +58,10 @@ function String({tuning, localNotes}) {
   );
 }
 
-function Note({note}) {
+function Note({note, octave}) {
   if (note !== "") {
   return (
-    <div className="note flex flex-column flex-center" onClick={() => synth.triggerAttackRelease(note + "4", "8n")}>
+    <div className="note flex flex-column flex-center" onClick={() => synth.triggerAttackRelease(note + octave, "8n")}>
     <p>
     {note}
     </p>
@@ -73,7 +90,7 @@ function RootNote({root, onRootChange}) {
 export default function Home() {
   const [rootNote, setRootNote] = useState("B");
   const scale = [2, 2, 1, 2, 2, 2, 1];
-  const tuning = ["E", "A", "D", "G", "B", "E"];
+  const tuning = ["E4", "B3", "G3", "D3", "A2", "E2"];
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
