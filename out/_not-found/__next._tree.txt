@@ -1,2 +1,2 @@
-:HL["/guitar-react-tools.github.io/_next/static/chunks/3ifdgeiux7a41.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"vzt03HBSAzyJx7wrpLp63"}
+:HL["/_next/static/chunks/3ifdgeiux7a41.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"dHrbIXqlr7n9qkhZV8JLN"}
