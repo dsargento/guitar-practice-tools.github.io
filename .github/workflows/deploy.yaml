@@ -28,7 +28,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24" # You can change this to match your local Node version
-          
+
+      - name: Setup Pages
+        id: setup_pages
+        uses: actions/configure-pages@v5
+
       - name: Install dependencies
         run: npm ci # Use 'yarn install' or 'pnpm install' if you don't use npm
         
@@ -53,5 +57,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        env:
-          NEXT_PUBLIC_PAGES_BASE_PATH: ${{ steps.setup_pages.outputs.base_path }}
